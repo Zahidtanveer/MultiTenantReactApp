@@ -4,6 +4,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
+// Add the TenantService
+builder.Services.AddSingleton<TenantService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
