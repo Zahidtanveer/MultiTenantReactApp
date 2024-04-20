@@ -15,7 +15,7 @@ namespace MultiTenantReactApp.Controllers
         {
             _tenantService = tenantService;
         }
-       
+
         // Endpoint to get data for a specific tenant by ID
         [HttpGet("{id}")]
         public IActionResult GetTenantById(int id)
@@ -30,7 +30,7 @@ namespace MultiTenantReactApp.Controllers
 
         // Endpoint to upload favicon for a specific tenant
         [HttpPost("{tenantId}/favicon")]
-        public IActionResult UploadFavicon(int tenantId, [FromForm] IFormFile file)
+        public IActionResult UploadFavicon(int tenantId, IFormFile file)
         {
             var tenant = _tenantService.GetTenantById(tenantId);
             if (tenant == null)
@@ -43,8 +43,8 @@ namespace MultiTenantReactApp.Controllers
                 return BadRequest("No file uploaded");
             }
 
-            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
-            var uniqueFileName = $"{file.FileName}_{tenantId}";
+            var uploadsFolder = GetTenantFolderPath(tenantId);
+            var uniqueFileName = $"favicon-{file.FileName}";
             var filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
             // Delete the existing file if it exists
@@ -63,7 +63,7 @@ namespace MultiTenantReactApp.Controllers
 
         // Endpoint to upload home banner image for a specific tenant
         [HttpPost("{tenantId}/homebanner")]
-        public IActionResult UploadHomeBanner(int tenantId, [FromForm] IFormFile file)
+        public IActionResult UploadHomeBanner(int tenantId, IFormFile file)
         {
             var tenant = _tenantService.GetTenantById(tenantId);
             if (tenant == null)
@@ -76,8 +76,8 @@ namespace MultiTenantReactApp.Controllers
                 return BadRequest("No file uploaded");
             }
 
-            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
-            var uniqueFileName = $"{file.FileName}_{tenantId}";
+            var uploadsFolder = GetTenantFolderPath(tenantId);
+            var uniqueFileName = $"banner-{file.FileName}";
             var filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
             // Delete the existing file if it exists
@@ -93,6 +93,14 @@ namespace MultiTenantReactApp.Controllers
 
             return Ok($"Home banner uploaded for Tenant ID {tenantId}: {uniqueFileName}");
         }
-
+        private string GetTenantFolderPath(int tenantId)
+        {
+            string tenantFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\uploads", tenantId.ToString());
+            if (!Directory.Exists(tenantFolder))
+            {
+                Directory.CreateDirectory(tenantFolder); // Create folder if it doesn't exist
+            }
+            return tenantFolder;
+        }
     }
 }
