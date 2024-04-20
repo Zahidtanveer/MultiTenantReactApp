@@ -9,11 +9,15 @@ builder.Services.AddControllersWithViews();
 
 // Add the TenantService
 builder.Services.AddSingleton<TenantService>();
+// Add the Tenant Assets Service
+builder.Services.AddSingleton<TenantAssetsService>();
+
 
 // Inside ConfigureServices method
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Multi Tenant API Service", Version = "v1" });
+    
 });
 
 var app = builder.Build();
@@ -37,6 +41,8 @@ app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Multi Tenant API Service v1");
+    // Configure Swagger UI to support file uploads
+    c.ConfigObject.AdditionalItems["syntaxHighlight"] = false;
 });
 
 app.MapControllerRoute(
