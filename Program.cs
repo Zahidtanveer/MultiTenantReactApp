@@ -1,3 +1,6 @@
+using Microsoft.OpenApi.Models;
+using MultiTenantReactApp.Service;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -6,7 +9,17 @@ builder.Services.AddControllersWithViews();
 
 // Add the TenantService
 builder.Services.AddSingleton<TenantService>();
+
+// Inside ConfigureServices method
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Multi Tenant API Service", Version = "v1" });
+});
+
 var app = builder.Build();
+
+
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -19,6 +32,12 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
+// Inside Configure method, before app.UseEndpoints(...)
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Multi Tenant API Service v1");
+});
 
 app.MapControllerRoute(
     name: "default",
